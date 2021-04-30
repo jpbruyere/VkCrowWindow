@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AssemblyName>CrowWindow</AssemblyName>
+		<TargetFrameworks>netstandard2.1</TargetFrameworks>
+		<Description>vke.net addon to creaet a vulkan window with C.R.O.W. gui support.</Description>
+		<PackageTags>vulkan gui ui c# vke.net</PackageTags>
+		<PackageVersion>0.2.0-beta</PackageVersion>
+		
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		
+		<PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+		<PackageProjectUrl>https://github.com/jpbruyere/VkCrowWindow/blob/master/README.md</PackageProjectUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>icon.png</PackageIcon>
+
+		<License>MIT</License>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<OutputType>Library</OutputType>
+		<EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>		
+		<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
+		<IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Crow" Version="0.9.3-beta" />
+		<PackageReference Include="vke" Version="0.2.0-beta" />
+		<PackageReference Include="SpirVTasks" Version="0.1.44" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="src\**\*.cs" />
+		<GLSLShader Include="shaders\**\*.frag;shaders\**\*.vert;shaders\**\*.comp;shaders\**\*.geom" />
+		<None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>	
+</Project>
