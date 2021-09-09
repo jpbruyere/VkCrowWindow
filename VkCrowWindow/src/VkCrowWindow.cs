@@ -23,12 +23,15 @@ namespace vke {
 		}
 		#endregion
 
-		protected CrowWindow() : base("vkChess.net", 800, 600,false) {}
+		protected CrowWindow(string windowTitle = "VkCrowWindow") : base (
+			windowTitle,
+			Configuration.Global.Get<uint> ("Width", 800),
+			Configuration.Global.Get<uint> ("Height", 600), false) {}
 		public bool MouseIsInInterface =>
 			iFace.HoverWidget != null;
 
 		protected FSQPipeline fsqPl;
-		DescriptorPool dsPool;
+		protected DescriptorPool dsPool;
 		protected DescriptorSet descSet;
 		CommandPool cmdPoolCrow;
 		PrimaryCommandBuffer cmdUpdateCrow;
@@ -41,7 +44,7 @@ namespace vke {
 
 
 		VkDescriptorSetLayoutBinding dslBinding = new VkDescriptorSetLayoutBinding (0, VkShaderStageFlags.Fragment, VkDescriptorType.CombinedImageSampler);
-		FrameBuffers frameBuffers;
+		protected FrameBuffers frameBuffers;
 
 		protected override void initVulkan () {
 			base.initVulkan ();
@@ -51,18 +54,24 @@ namespace vke {
 
 			CreateRenderPass ();
 
-			fsqPl = new FSQPipeline (renderPass,
-				new PipelineLayout (dev, new DescriptorSetLayout (dev, dslBinding)));
+			CreatePipeline ();
 
 			cmdPoolCrow = new CommandPool (presentQueue, VkCommandPoolCreateFlags.ResetCommandBuffer);
 			cmdUpdateCrow = cmdPoolCrow.AllocateCommandBuffer ();
 
-			dsPool = new DescriptorPool (dev, 1, new VkDescriptorPoolSize (VkDescriptorType.CombinedImageSampler));
-			descSet = dsPool.Allocate (fsqPl.Layout.DescriptorSetLayouts[0]);
+			CreateDescriptors ();
 
 			Thread ui = new Thread (crowThread);
 			ui.IsBackground = true;
 			ui.Start ();
+		}
+		protected virtual void CreateDescriptors () {
+			dsPool = new DescriptorPool (dev, 1, new VkDescriptorPoolSize (VkDescriptorType.CombinedImageSampler));
+			descSet = dsPool.Allocate (fsqPl.Layout.DescriptorSetLayouts[0]);
+		}
+		protected virtual void CreatePipeline () {
+			fsqPl = new FSQPipeline (renderPass,
+				new PipelineLayout (dev, new DescriptorSetLayout (dev, dslBinding)));
 		}
 		protected virtual void CreateRenderPass () {
 			//renderPass = new RenderPass (dev, swapChain.ColorFormat, VkSampleCountFlags.SampleCount1);			
@@ -165,7 +174,7 @@ namespace vke {
 
 		protected virtual void recordUICmd (PrimaryCommandBuffer cmd, int imageIndex) {			
 			renderPass.Begin(cmd, frameBuffers[imageIndex]);
-			fsqPl.BindDescriptorSet (cmd, descSet, 0);
+			fsqPl.BindDescriptorSet (cmd, descSet);
 			fsqPl.RecordDraw (cmd);
 			renderPass.End (cmd);
 		}
@@ -261,12 +270,15 @@ namespace vke {
 
 			running = false;
 			frameBuffers?.Dispose();
-			fsqPl.Dispose ();
+			fsqPl?.Dispose ();
 			dsPool.Dispose ();
 			cmdPoolCrow.Dispose ();
 			crowImage?.Dispose ();
 			crowBuffer?.Dispose ();
 			iFace.Dispose ();
+
+			Configuration.Global.Set ("Width", Width);
+			Configuration.Global.Set ("Height", Height);
 
 			base.Dispose (disposing);
 		}

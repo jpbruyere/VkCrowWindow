@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VkCrowWindow", "VkCrowWindow.csproj", "{988C03AE-049D-43B0-90FB-E4D2E721EB31}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VkCrowWindow", "VkCrowWindow\VkCrowWindow.csproj", "{988C03AE-049D-43B0-90FB-E4D2E721EB31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

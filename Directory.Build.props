@@ -1,0 +1,11 @@
+<Project>
+	<PropertyGroup>
+		<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
+		<IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
+		<License>MIT</License>
+		<Authors>Jean-Philippe Bruyère</Authors>
+		
+		<CrowVersion>0.9.5-beta</CrowVersion>
+		<VkeVersion>0.2.1-beta</VkeVersion>
+	</PropertyGroup>
+</Project>

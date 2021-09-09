@@ -3,9 +3,10 @@
 	<PropertyGroup>
 		<AssemblyName>VkCrowWindow</AssemblyName>
 		<TargetFrameworks>netstandard2.1</TargetFrameworks>
-		<Description>vke.net addon to creaet a vulkan window with C.R.O.W. gui support.</Description>
+		<Description>create vulkan applications in c# with C.R.O.W. gui support.</Description>
 		<PackageTags>vulkan gui ui c# vke.net</PackageTags>
-		<PackageVersion>0.3.0-beta</PackageVersion>
+
+		<PackageVersion>0.3.4-beta</PackageVersion>
 		
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -15,18 +16,15 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>icon.png</PackageIcon>
 
-		<License>MIT</License>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<OutputType>Library</OutputType>
 		<EnableDefaultNoneItems>false</EnableDefaultNoneItems>
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>		
-		<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
-		<IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Crow" Version="0.9.5-beta" />
-		<PackageReference Include="vke" Version="0.2.0-beta" />
+		<PackageReference Include="Crow" Version="$(CrowVersion)" />
+		<PackageReference Include="vke" Version="$(VkeVersion)" />
+		<!--<ProjectReference Include="/mnt/devel/vke.net/vke/vke.csproj"/>-->
 		<PackageReference Include="SpirVTasks" Version="0.1.44" />
 	</ItemGroup>
 	<ItemGroup>
