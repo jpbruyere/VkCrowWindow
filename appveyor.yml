@@ -1,0 +1,33 @@
+version: 0.1.{build}
+
+image:
+  - Visual Studio 2019
+  - Ubuntu
+
+build:
+  verbosity: minimal
+
+artifacts:
+    - path: 'build/**/*.nupkg'
+
+for:
+  -
+    matrix:
+      only:
+        - image: Visual Studio 2019
+    environment:
+      APPVEYOR_SAVE_CACHE_ON_ERROR: true
+    install:
+      - vcpkg install cairo --recurse
+      - vcpkg integrate install 
+    build_script:
+      - msbuild /p:Configuration=Release /t:restore
+      - msbuild /p:Configuration=Release
+  -
+    matrix:
+      only:
+        - image: Ubuntu
+    environment:
+      FrameworkPathOverride: /usr/lib/mono/4.5/
+    build_script:
+      - dotnet build /p:Configuration=Release
