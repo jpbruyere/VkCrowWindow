@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<AssemblyName>VkCrowWindow</AssemblyName>
 		<TargetFrameworks>netstandard2.1</TargetFrameworks>
 		<Description>create vulkan applications in c# with C.R.O.W. gui support.</Description>
 		<PackageTags>vulkan gui ui c# vke.net</PackageTags>
@@ -22,10 +21,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Crow" Version="$(CrowVersion)" />
-		<PackageReference Include="vke" Version="$(VkeVersion)" />
+		<PackageReference Include="Crow" Version="$(CrowPackageVersion)" />
+		<PackageReference Include="vke" Version="$(VkePackageVersion)" />
 		<!--<ProjectReference Include="/mnt/devel/vke.net/vke/vke.csproj"/>-->
-		<PackageReference Include="SpirVTasks" Version="0.1.44" />
+		<PackageReference Include="SpirVTasks" Version="$(SpirVTasksPackageVersion)" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Include="src\**\*.cs" />

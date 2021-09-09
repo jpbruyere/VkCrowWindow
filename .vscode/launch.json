@@ -1,0 +1,35 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": ".NET Core Launch (HelloWorld)",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build HelloWorld",
+			"program": "${workspaceFolder}/build/netcoreapp3.1/HelloWorld.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}",
+			"console": "internalConsole",
+			"stopAtEntry": false
+		},
+		{
+			"name": ".NET Core Launch (Triangle)",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build Triangle",
+			"program": "${workspaceFolder}/build/netcoreapp3.1/Triangle.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}",
+			"console": "internalConsole",
+			"stopAtEntry": false
+		},
+		{
+			"name": ".NET Core Attach",
+			"type": "coreclr",
+			"request": "attach"
+		}
+	]
+}

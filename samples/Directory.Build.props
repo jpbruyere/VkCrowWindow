@@ -1,0 +1,51 @@
+<Project>
+	<Import Project="../Directory.Build.props" />
+	<PropertyGroup>
+		<Deterministic>true</Deterministic>
+
+		<TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+
+		
+
+		<!--<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>-->
+		<OutputType>Exe</OutputType>
+		
+		<IncludeDefaultNoneItems>false</IncludeDefaultNoneItems>
+
+		<CommonDir>$(MSBuildThisFileDirectory)common\</CommonDir>
+		
+
+		<SpirVAdditionalIncludeDirectories>$(CommonShadersDir)shaders</SpirVAdditionalIncludeDirectories>
+		
+		<!--<RestoreAdditionalProjectSources Condition="Exists('$(SolutionDir)build\$(Configuration)\')">$(SolutionDir)build\$(Configuration)\</RestoreAdditionalProjectSources>-->
+	</PropertyGroup>
+			
+	<ItemGroup Condition=" '$(Configuration)|$(Platform)' != 'BuildPackages|AnyCPU' ">
+		<ProjectReference Include="..\..\VkCrowWindow\VkCrowWindow.csproj" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'BuildPackages|AnyCPU' ">
+		<PackageReference Include="vke" Version="$(VkePackageVersion)" />
+	</ItemGroup>
+			
+	<ItemGroup>
+		<PackageReference Include="SpirVTasks" Version="$(SpirVTasksPackageVersion)" />
+	</ItemGroup>    
+
+	<ItemGroup>
+		<!--<Compile Include="$(MSBuildThisFileDirectory)common\Utils.cs;$(MSBuildThisFileDirectory)common\SampleBase.cs"/>-->
+		<GLSLShader Include="$(CommonDir)shaders\**\*.frag;$(CommonDir)shaders\**\*.vert;$(CommonDir)shaders\**\*.comp;$(CommonDir)shaders\**\*.geom">
+			<LogicalName>shaders.%(Filename)%(Extension).spv</LogicalName>
+		</GLSLShader>		
+		<EmbeddedResource Include="$(CommonDir)ui\**\*.*">
+			<LogicalName>ui.%(Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+
+		<GLSLShader Include="shaders\**\*.frag;shaders\**\*.vert;shaders\**\*.comp;shaders\**\*.geom">
+			<LogicalName>shaders.%(Filename)%(Extension).spv</LogicalName>
+		</GLSLShader>		
+		<EmbeddedResource Include="ui\**\*.*">
+			<LogicalName>ui.%(Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+	</ItemGroup>     
+</Project>
