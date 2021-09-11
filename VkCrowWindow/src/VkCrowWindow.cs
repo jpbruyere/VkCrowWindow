@@ -58,6 +58,10 @@ namespace vke {
 		vke.DebugUtils.Messenger dbgmsg;
 #endif
 		protected override void initVulkan () {
+			camera = new Camera (Utils.DegreesToRadians (45), Width / Height, 0.1f, 32f);
+			camera.Type = Camera.CamType.LookAt;
+			camera.SetPosition (0, 0, -10);
+
 			base.initVulkan ();
 
 #if DEBUG
@@ -67,7 +71,7 @@ namespace vke {
 				VkDebugUtilsMessageSeverityFlagsEXT.ErrorEXT |
 				VkDebugUtilsMessageSeverityFlagsEXT.VerboseEXT);
 #endif
-			
+			Interface.CrowAssemblyNames = new string[] {"VkCrowWindow"};
 
 			iFace = new Interface ((int)Width, (int)Height, WindowHandle);
 			iFace.Init ();
@@ -115,7 +119,7 @@ namespace vke {
 		/// be set to 'Load' to blend the ui with the rendering output.
 		/// </summary>
 		protected virtual void CreateRenderPass () {
-			renderPass = new RenderPass (dev, swapChain.ColorFormat, VkSampleCountFlags.SampleCount1);			
+			renderPass = new RenderPass (dev, swapChain.ColorFormat, VkSampleCountFlags.SampleCount1);
 			/*renderPass = new RenderPass (dev, VkSampleCountFlags.SampleCount1);
 			renderPass.AddAttachment (swapChain.ColorFormat, VkImageLayout.PresentSrcKHR, VkSampleCountFlags.SampleCount1,
 				VkAttachmentLoadOp.Load, VkAttachmentStoreOp.DontCare, VkImageLayout.ColorAttachmentOptimal);//final outpout
@@ -148,7 +152,7 @@ namespace vke {
 			renderPass.End (cmd);
 		}
 		//build one command buffer per swapchain image.
-		void buildCommandBuffers () {
+		protected virtual void buildCommandBuffers () {
 			dev.WaitIdle ();
 			cmdPool.Reset ();
 			for (int i = 0; i < swapChain.ImageCount; ++i) {
@@ -156,7 +160,7 @@ namespace vke {
 				buildCommandBuffer (cmds[i], i);
 				cmds [i].End ();
 			}
-		}		
+		}
 
 
 		#region vke overrides
@@ -188,7 +192,7 @@ namespace vke {
 			dev.WaitIdle ();
 			initCrowSurface ();
 			iFace.ProcessResize (new Rectangle (0, 0, (int)Width, (int)Height));
-			
+
 			frameBuffers?.Dispose();
 			frameBuffers = renderPass.CreateFrameBuffers(swapChain);
 
@@ -243,7 +247,18 @@ namespace vke {
 		{
 			if (iFace.OnMouseMove ((int)xPos, (int)yPos))
 				return;
-			base.onMouseMove (xPos, yPos);
+			double diffX = lastMouseX - xPos;
+			double diffY = lastMouseY - yPos;
+
+			if (GetButton (MouseButton.Left) == InputAction.Press)
+				camera.Rotate ((float)-diffY, (float)-diffX);
+			else if (GetButton (MouseButton.Right) == InputAction.Press)
+				camera.Move (0, 0, (float)diffY * 0.2f);
+			else if (GetButton (MouseButton.Middle) == InputAction.Press)
+				camera.Move ((float)diffX * -0.2f, (float)diffY * 0.2f, 0);
+			else
+				return;
+			updateViewRequested = true;
 		}
 		protected override void onMouseButtonDown (MouseButton button) {
 			if (iFace.OnMouseButtonDown (button))
@@ -360,13 +375,16 @@ namespace vke {
 				w.DataSource = dataSource;
 
 			} catch (Exception ex) {
-				System.Diagnostics.Debug.WriteLine (ex);
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine ($"VkCrowWindo: error loading interface ({path})");
+				Console.WriteLine (ex);
+				Console.ResetColor();
 			}
 		}
-		protected void loadIMLFragment (string imlFragment, object dataSource = null) {			
-			iFace.LoadIMLFragment (imlFragment).DataSource = dataSource;			
+		protected void loadIMLFragment (string imlFragment, object dataSource = null) {
+			iFace.LoadIMLFragment (imlFragment).DataSource = dataSource;
 		}
-		protected T loadIMLFragment<T> (string imlFragment, object dataSource = null) {			
+		protected T loadIMLFragment<T> (string imlFragment, object dataSource = null) {
 			Widget tmp = iFace.LoadIMLFragment (imlFragment);
 			tmp.DataSource = dataSource;
 			return (T)Convert.ChangeType (tmp,typeof(T));

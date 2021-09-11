@@ -16,11 +16,13 @@ layout (location = 0) out vec3 outColor;
 out gl_PerVertex
 {
     vec4 gl_Position;
+	float gl_PointSize;
 };
 
 
 void main()
 {
+	gl_PointSize = 10.0;
 	outColor = inColor;
-	gl_Position = mvp * vec4(inPos.xyz, 1.0);
+	gl_Position = vec4(inPos.xyz, 1.0);
 }

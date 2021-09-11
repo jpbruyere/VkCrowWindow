@@ -1,0 +1,9 @@
+﻿<?xml version="1.0"?>
+<HorizontalStack Spacing="10" Background="{./Background}" Width="Stretched" Height="Stretched" Margin="5">
+	<Label Text="{./Caption}" Margin="2" Fit="true"/>
+	<HorizontalStack Spacing="5">
+		<Spinner Value="{²./X}" SmallIncrement="{²./SmallIncrement}" LargeIncrement="{²./LargeIncrement}" Minimum="{²./Minimum}" Maximum="{²./Maximum}" Decimals="{²./Decimals}" Width="${VectorComponentWidth}"/>
+		<Spinner Value="{²./Y}" SmallIncrement="{²./SmallIncrement}" LargeIncrement="{²./LargeIncrement}" Minimum="{²./Minimum}" Maximum="{²./Maximum}" Decimals="{²./Decimals}" Width="${VectorComponentWidth}"/>
+		<Spinner Value="{²./Z}" SmallIncrement="{²./SmallIncrement}" LargeIncrement="{²./LargeIncrement}" Minimum="{²./Minimum}" Maximum="{²./Maximum}" Decimals="{²./Decimals}" Width="${VectorComponentWidth}"/>
+	</HorizontalStack>
+</HorizontalStack>

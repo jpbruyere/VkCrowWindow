@@ -1,4 +1,6 @@
-﻿// Copyright (c) 2019  Jean-Philippe Bruyère <jp_bruyere@hotmail.com>
+﻿#define TEST_BEZIER
+
+// Copyright (c) 2019  Jean-Philippe Bruyère <jp_bruyere@hotmail.com>
 //
 // This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 using System;
@@ -10,9 +12,9 @@ using Glfw;
 
 //the traditional triangle sample with crow ui on top.
 //a single pipeline is used to output a triangle with the crow ui directly mixed with it.
-namespace Triangle {
+namespace Tessellation2 {
 	class Program : CrowWindow {
-#if NETCOREAPP		
+#if NETCOREAPP
 		static IntPtr resolveUnmanaged (System.Reflection.Assembly assembly, String libraryName) {
 			switch (libraryName) {
 				case "glfw3":
@@ -25,7 +27,7 @@ namespace Triangle {
 		static Program () {
 			System.Runtime.Loader.AssemblyLoadContext.Default.ResolvingUnmanagedDll+=resolveUnmanaged;
 		}
-#endif		
+#endif
 		static void Main (string[] args) {
 			Instance.VALIDATION = true;
 			//Instance.RENDER_DOC_CAPTURE = true;
@@ -34,8 +36,6 @@ namespace Triangle {
 				app.Run ();
 		}
 
-		const float rotSpeed = 0.01f, zoomSpeed = 0.01f;
-		float rotX, rotY, zoom = 1f;
 
 		//vertex structure
 		[StructLayout(LayoutKind.Sequential)]
@@ -52,19 +52,59 @@ namespace Triangle {
 
 		Matrix4x4 mvp;      //the model view projection matrix
 
-		HostBuffer ibo;     //a host mappable buffer to hold the indices.
 		HostBuffer vbo;     //a host mappable buffer to hold vertices.
 		HostBuffer uboMats; //a host mappable buffer for mvp matrice.
 
-		//triangle vertices (position + color per vertex) and indices.
-		Vertex[] vertices = {
-			new Vertex (-1.0f, -1.0f, 0.0f ,  1.0f, 0.0f, 0.0f),
-			new Vertex ( 1.0f, -1.0f, 0.0f ,  0.0f, 1.0f, 0.0f),
-			new Vertex ( 0.0f,  1.0f, 0.0f ,  0.0f, 0.0f, 1.0f),
-		};
-		ushort[] indices = new ushort[] { 0, 1, 2 };
 
-		//We need an additional descriptor for the matrices uniform buffer of the triangle.
+		//bezier line vertices (position + color per vertex) and indices.
+#if TEST_BEZIER
+		Vertex[] vertices = {
+			new Vertex (   0f,    0,   0f,  1.0f, 0.0f, 0.0f),
+			new Vertex ( 1.0f, 1.0f, 1.0f,  0.0f, 1.0f, 0.0f),
+			new Vertex ( 2.0f, 1.0f, 0.0f,  0.0f, 0.0f, 1.0f),
+			new Vertex ( 3.0f, 0.0f, 1.0f,  1.0f, 0.0f, 1.0f),
+		};
+		string testName => "bezier";
+		VkPrimitiveTopology topology => VkPrimitiveTopology.PatchList;
+#elif TEST_SPHERE
+		Vertex[] vertices = {
+			new Vertex (   0f,    0,   0f,  0.3f, 0.0f, 0.0f),
+			new Vertex (   0f,    1,   0f,  0.4f, 1.0f, 0.0f)
+		};
+
+		string testName => "sphere";
+		VkPrimitiveTopology topology => VkPrimitiveTopology.PointList;
+#endif
+
+		float tessAlpha = 1.0f, tessLevel = 3.0f;
+		public float TessAlpha {
+			get => tessAlpha;
+			set {
+				if (value == tessAlpha)
+					return;
+				tessAlpha = value;
+				NotifyValueChanged (tessAlpha);
+				updateViewRequested = true;
+			}
+		}
+		public float TessLevel {
+			get => tessLevel;
+			set {
+				if (value == tessLevel)
+					return;
+				tessLevel = value;
+				NotifyValueChanged (tessLevel);
+				updateViewRequested = true;
+			}
+		}
+		protected override void configureEnabledFeatures(VkPhysicalDeviceFeatures available_features, ref VkPhysicalDeviceFeatures enabled_features)
+		{
+			if (!available_features.tessellationShader)
+				throw new Exception ("tessellation not supported");
+			enabled_features.tessellationShader = true;
+			enabled_features.fillModeNonSolid = true;
+		}
+
 		protected override void CreateAndAllocateDescriptors()
 		{
 			descriptorPool = new DescriptorPool (dev, 1,
@@ -74,22 +114,33 @@ namespace Triangle {
 		}
 		protected override void CreatePipeline()
 		{
-			using (GraphicPipelineConfig cfg = GraphicPipelineConfig.CreateDefault (VkPrimitiveTopology.TriangleList, VkSampleCountFlags.SampleCount1, false)) {
+			using (GraphicPipelineConfig cfg = GraphicPipelineConfig.CreateDefault (VkPrimitiveTopology.PatchList, VkSampleCountFlags.SampleCount1, false)) {
+				cfg.rasterizationState.polygonMode = VkPolygonMode.Fill;
 				cfg.Layout = new PipelineLayout (dev,
 					new DescriptorSetLayout (dev,
 						new VkDescriptorSetLayoutBinding (0, VkShaderStageFlags.Fragment, VkDescriptorType.CombinedImageSampler),
-						new VkDescriptorSetLayoutBinding (1, VkShaderStageFlags.Vertex, VkDescriptorType.UniformBuffer)
+						new VkDescriptorSetLayoutBinding (1,
+							VkShaderStageFlags.Vertex |
+							VkShaderStageFlags.TessellationControl |
+							VkShaderStageFlags.TessellationEvaluation,
+							VkDescriptorType.UniformBuffer)
 				));
 				cfg.RenderPass = renderPass;
 
 				cfg.AddVertexBinding<Vertex> (0);
 				cfg.AddVertexAttributes (0, VkFormat.R32g32b32Sfloat, VkFormat.R32g32b32Sfloat);//position + color
 				cfg.AddShaders (
-					new ShaderInfo (dev, VkShaderStageFlags.Vertex, "#shaders.triangle.vert.spv"),
-					new ShaderInfo (dev, VkShaderStageFlags.Fragment, "#shaders.triangle.frag.spv")
+					new ShaderInfo (dev, VkShaderStageFlags.TessellationControl, $"#shaders.{testName}.tesc.spv"),
+					new ShaderInfo (dev, VkShaderStageFlags.TessellationEvaluation, $"#shaders.{testName}.tese.spv"),
+					new ShaderInfo (dev, VkShaderStageFlags.Vertex, "#shaders.main.vert.spv"),
+					new ShaderInfo (dev, VkShaderStageFlags.Fragment, "#shaders.main.frag.spv")
 				);
+				cfg.TessellationPatchControlPoints = 3;
 
 				trianglePipeline = new GraphicPipeline (cfg);
+
+				cfg.rasterizationState.polygonMode = VkPolygonMode.Fill;
+				cfg.inputAssemblyState.topology = VkPrimitiveTopology.TriangleList;
 
 				cfg.ResetShadersAndVerticesInfos ();
 				cfg.blendAttachments[0] = new VkPipelineColorBlendAttachmentState (true);
@@ -102,46 +153,32 @@ namespace Triangle {
 
 		protected override void initVulkan () {
 			base.initVulkan ();
+			camera.SetPosition (0,0,-4);
 
 			//first create the needed buffers
 			vbo = new HostBuffer<Vertex> (dev, VkBufferUsageFlags.VertexBuffer, vertices);
-			ibo = new HostBuffer<ushort> (dev, VkBufferUsageFlags.IndexBuffer, indices);
 			//because mvp matrice may be updated by mouse move, we keep it mapped after creation.
-			uboMats = new HostBuffer (dev, VkBufferUsageFlags.UniformBuffer, mvp, true);
+			uboMats = new HostBuffer (dev, VkBufferUsageFlags.UniformBuffer,  (ulong)(Marshal.SizeOf<Matrix4x4>() + 8), true);
 
 			//Write the content of the descriptor, the mvp matrice.
 			DescriptorSetWrites uboUpdate = new DescriptorSetWrites (descriptorSet, mainPipeline.Layout.DescriptorSetLayouts[0].Bindings[1]);
 			uboUpdate.Write (dev, uboMats.Descriptor);
 
-			loadWindow ("#ui.Triangle.crow", this);
+			loadWindow ("#ui.main.crow", this);
 		}
 
 		//view update override, see base method for more informations.
 		public override void UpdateView () {
-			mvp =
-				Matrix4x4.CreateFromAxisAngle (Vector3.UnitY, rotY) *
-				Matrix4x4.CreateFromAxisAngle (Vector3.UnitX, rotX) *
-				Matrix4x4.CreateTranslation (0, 0, -3f * zoom) *
-				Utils.CreatePerspectiveFieldOfView (Utils.DegreesToRadians (45f), (float)swapChain.Width / (float)swapChain.Height, 0.1f, 256.0f);
+			camera.AspectRatio = (float)swapChain.Width / swapChain.Height;
+
+			mvp = camera.View * camera.Projection;
 
 			uboMats.Update (mvp, (uint)Marshal.SizeOf<Matrix4x4> ());
+			uboMats.Update (tessAlpha, 4, (uint)Marshal.SizeOf<Matrix4x4> ());
+			uboMats.Update (tessLevel, 4, (uint)Marshal.SizeOf<Matrix4x4> () + 4);
 			base.UpdateView ();
 		}
-		protected override void onMouseMove (double xPos, double yPos) {
-			if (iFace.OnMouseMove ((int)xPos, (int)yPos))
-				return;
 
-			double diffX = lastMouseX - xPos;
-			double diffY = lastMouseY - yPos;
-			if (GetButton (MouseButton.Left) == InputAction.Press) {
-				rotY -= rotSpeed * (float)diffX;
-				rotX += rotSpeed * (float)diffY;
-				updateViewRequested = true;
-			} else if (GetButton (MouseButton.Right) == InputAction.Press) {
-				zoom += zoomSpeed * (float)diffY;
-				updateViewRequested = true;
-			}
-		}
 		protected override void buildCommandBuffer (PrimaryCommandBuffer cmd, int imageIndex) {
 			mainPipeline.RenderPass.Begin (cmd, frameBuffers[imageIndex]);
 
@@ -152,8 +189,8 @@ namespace Triangle {
 			//first draw the triangle
 			cmd.BindPipeline (trianglePipeline);
 			cmd.BindVertexBuffer (vbo);
-			cmd.BindIndexBuffer (ibo, VkIndexType.Uint16);
-			cmd.DrawIndexed ((uint)indices.Length);
+			cmd.Draw ((uint)vertices.Length);
+
 			//next blend the ui on top
 			cmd.BindPipeline (mainPipeline);
 			cmd.Draw (3, 1, 0, 0);
@@ -167,39 +204,17 @@ namespace Triangle {
 			UpdateView ();
 		}
 		//clean up
-		protected override void Dispose (bool disposing) {		
+		protected override void Dispose (bool disposing) {
 			dev.WaitIdle ();
 			if (disposing) {
 				if (!isDisposed) {
 					trianglePipeline.Dispose ();
 					vbo.Dispose ();
-					ibo.Dispose ();
 					uboMats.Dispose ();
 				}
 			}
 
 			base.Dispose (disposing);
 		}
-
-
-		public int CrowUpdateInterval {
-			get => Crow.Interface.UPDATE_INTERVAL;
-			set {
-				if (Crow.Interface.UPDATE_INTERVAL == value)
-					return;
-				Crow.Interface.UPDATE_INTERVAL = value;
-				NotifyValueChanged (Crow.Interface.UPDATE_INTERVAL);
-			}
-		}
-		public long VkeUpdateInterval {
-			get => UpdateFrequency;
-			set {
-				if (UpdateFrequency == value)
-					return;
-				UpdateFrequency = value;
-				NotifyValueChanged (UpdateFrequency);
-			}
-		}
-
 	}
 }

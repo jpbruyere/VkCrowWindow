@@ -3,10 +3,10 @@ using vke;
 
 namespace HelloWorld
 {
-	
+
 	public class Program : CrowWindow
 	{
-#if NETCOREAPP		
+#if NETCOREAPP
 		static IntPtr resolveUnmanaged (System.Reflection.Assembly assembly, String libraryName) {
 			switch (libraryName) {
 				case "glfw3":
@@ -52,6 +52,6 @@ namespace HelloWorld
 				NotifyValueChanged (UpdateFrequency);
 			}
 		}
-		
+
 	}
 }

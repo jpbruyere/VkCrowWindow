@@ -25,7 +25,7 @@ namespace vke {
 				layout = cfg.Layout;
 
 				init (cfg);
-			}			
+			}
 		}
 
 		public virtual void RecordDraw (CommandBuffer cmd) {

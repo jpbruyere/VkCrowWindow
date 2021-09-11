@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<VerticalStack Background="0.1,0.1,0.3,0.8" Margin="5" Spacing="10" Width="200" Height="200" Left="10" Top="10">
+	<HorizontalStack Fit="true" Margin="10" Spacing="5" Background="0.1,0.2,0.1,0.8">
+		<Label Text="fps:" Font="mono, 20" Foreground="Black"/>
+		<Label Text="{fps}" Font="mono, 20" Background="Black" Foreground="White" Margin="2" CornerRadius="5"/>
+	</HorizontalStack>
+	<Slider Template="#ui.Slider.template" Height="Fit" Background="0.1,0.1,0.2,0.8"
+		Maximum="20" SmallIncrement="0.1" LargeIncrement="1" Decimals="2"
+		Caption="Tesselation Level" Value="{²TessLevel}" />
+	<Slider Template="#ui.Slider.template" Height="Fit" Background="0.1,0.1,0.2,0.8"
+		Maximum="1" SmallIncrement="0.01" LargeIncrement="0.1" Decimals="2"
+		Caption="Tesselation Alpha" Value="{²TessAlpha}" />
+</VerticalStack>

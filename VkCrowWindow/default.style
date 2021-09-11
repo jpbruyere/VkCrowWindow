@@ -1,0 +1,8 @@
+VectorComponentWidth = "30%";
+
+Vector3Widget {
+	Template = "#VkCrowWindow.Vector3Widget.template";
+	Height="Fit";
+	Width="Stretched";
+	Background="Onyx";
+}

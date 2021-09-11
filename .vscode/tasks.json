@@ -11,6 +11,7 @@
 				"build",
 				"${workspaceFolder}/samples/HelloWorld/HelloWorld.csproj",
 				"/property:GenerateFullPaths=true",
+				"/property:Configuration=Debug",
 				"/consoleloggerparameters:NoSummary"
 			],
             "group": "build",
@@ -27,6 +28,7 @@
 				"build",
 				"${workspaceFolder}/samples/Triangle/Triangle.csproj",
 				"/property:GenerateFullPaths=true",
+				"/property:Configuration=Debug",
 				"/consoleloggerparameters:NoSummary"
 			],
             "group": "build",
@@ -34,6 +36,40 @@
                 "reveal": "silent"
             },
             "problemMatcher": "$msCompile"
-        }
+        },
+        {
+			"label": "build Tessellation",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/samples/Tessellation/Tessellation.csproj",
+				"/property:GenerateFullPaths=true",
+				"/property:Configuration=Debug",
+				"/consoleloggerparameters:NoSummary"
+			],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+			"label": "build Tessellation2",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/samples/Tessellation2/Tessellation2.csproj",
+				"/property:GenerateFullPaths=true",
+				"/property:Configuration=Debug",
+				"/consoleloggerparameters:NoSummary"
+			],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
     ]
 }

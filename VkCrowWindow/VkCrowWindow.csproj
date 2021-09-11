@@ -5,11 +5,11 @@
 		<Description>create vulkan applications in c# with C.R.O.W. gui support.</Description>
 		<PackageTags>vulkan gui ui c# vke.net</PackageTags>
 
-		<PackageVersion>0.3.4-beta</PackageVersion>
-		
+		<PackageVersion>0.3.5-beta</PackageVersion>
+
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		
+
 		<PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
 		<PackageProjectUrl>https://github.com/jpbruyere/VkCrowWindow/blob/master/README.md</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -17,7 +17,7 @@
 
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<EnableDefaultNoneItems>false</EnableDefaultNoneItems>
-		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>		
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -30,5 +30,9 @@
 		<Compile Include="src\**\*.cs" />
 		<GLSLShader Include="shaders\**\*.frag;shaders\**\*.vert;shaders\**\*.comp;shaders\**\*.geom" />
 		<None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
-	</ItemGroup>	
+		<EmbeddedResource Include="default.style" />
+		<EmbeddedResource Include="ui\**\*.*" >
+			<LogicalName>VkCrowWindow.%(Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+	</ItemGroup>
 </Project>
