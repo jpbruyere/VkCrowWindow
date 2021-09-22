@@ -133,7 +133,7 @@ namespace Tessellation {
 		protected override void initVulkan () {
 			base.initVulkan ();
 
-			model = new SimpleModel (presentQueue, "/mnt/devel/vkChess.net/data/models/chess_lowpoly.glb");
+			model = new SimpleModel (presentQueue, "chess_lowpoly.glb");
 
 			uboMats = new HostBuffer (dev, VkBufferUsageFlags.UniformBuffer, (ulong)(Marshal.SizeOf<Matrix4x4>() + 8), true);
 			DescriptorSetWrites uboUpdate = new DescriptorSetWrites (descriptorSet, mainPipeline.Layout.DescriptorSetLayouts[0].Bindings[1]);

@@ -40,7 +40,9 @@
 		<EmbeddedResource Include="$(CommonDir)ui\**\*.*">
 			<LogicalName>ui.%(Filename)%(Extension)</LogicalName>
 		</EmbeddedResource>
-
+		<None Include="$(CommonDir)models\*.*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<GLSLShader Include="shaders\**\*.frag;shaders\**\*.vert;shaders\**\*.comp;shaders\**\*.geom;shaders\**\*.tesc;shaders\**\*.tese">
 			<LogicalName>shaders.%(Filename)%(Extension).spv</LogicalName>
 		</GLSLShader>

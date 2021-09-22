@@ -7,7 +7,7 @@
 		<Authors>Jean-Philippe Bruyère</Authors>
 		<RepositoryUrl>https://github.com/jpbruyere/VkCrowWindow</RepositoryUrl>
 
-		<CrowPackageVersion>0.9.6-beta</CrowPackageVersion>
+		<CrowPackageVersion>0.9.7-beta</CrowPackageVersion>
 		<VkePackageVersion>0.2.1-beta</VkePackageVersion>
 		<SpirVTasksPackageVersion>0.1.44</SpirVTasksPackageVersion>
 	</PropertyGroup>

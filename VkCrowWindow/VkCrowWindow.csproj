@@ -5,7 +5,7 @@
 		<Description>create vulkan applications in c# with C.R.O.W. gui support.</Description>
 		<PackageTags>vulkan gui ui c# vke.net</PackageTags>
 
-		<PackageVersion>0.3.5-beta</PackageVersion>
+		<PackageVersion>0.3.6-beta</PackageVersion>
 
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>

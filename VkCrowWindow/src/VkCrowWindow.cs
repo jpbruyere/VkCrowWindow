@@ -15,7 +15,7 @@ namespace vke {
 	/// This is an easy way to have GUI in my samples with low GPU cost. Most of the ui
 	/// is cached on cpu memory images.
 	/// </summary>
-	public class CrowWindow : VkWindow, IValueChange {
+	public class CrowWindow : VkWindow, ICommandHost {
 		#region IValueChange implementation
 		public event EventHandler<ValueChangeEventArgs> ValueChanged;
 		public virtual void NotifyValueChanged (string MemberName, object _value)
@@ -243,6 +243,8 @@ namespace vke {
 		#endregion
 
 		#region Mouse and Keyboard routing between vke and crow
+		public event EventHandler<KeyEventArgs> KeyDown;
+
 		protected override void onMouseMove (double xPos, double yPos)
 		{
 			if (iFace.OnMouseMove ((int)xPos, (int)yPos))
@@ -282,12 +284,15 @@ namespace vke {
 			base.onChar (cp);
 		}
 		protected override void onKeyUp (Key key, int scanCode, Modifier modifiers) {
-			if (iFace.OnKeyUp (key))
+			if (iFace.OnKeyUp (new KeyEventArgs (key, scanCode, modifiers)))
 				return;
 			base.onKeyUp (key, scanCode, modifiers);
 		}
 		protected override void onKeyDown (Key key, int scanCode, Modifier modifiers) {
-			if (iFace.OnKeyDown (key))
+			KeyEventArgs e = new KeyEventArgs (key, scanCode, modifiers);
+			if (KeyDown != null)
+				KeyDown.Raise (this, e);
+			if (e.Handled || iFace.OnKeyDown (e))
 				return;
 			base.onKeyDown (key, scanCode, modifiers);
 		}
@@ -363,23 +368,24 @@ namespace vke {
 		}
 
 		#region crow ui interface loading methods
-		protected void loadWindow (string path, object dataSource = null) {
+		protected Widget loadWindow (string path, object dataSource = null) {
+			Widget w = null;
 			try {
-				Widget w = iFace.FindByName (path);
-				if (w != null) {
+				w = iFace.FindByName (path);
+				if (w != null)
 					iFace.PutOnTop (w);
-					return;
+				else {
+					w = iFace.Load (path);
+					w.Name = path;
+					w.DataSource = dataSource;
 				}
-				w = iFace.Load (path);
-				w.Name = path;
-				w.DataSource = dataSource;
-
 			} catch (Exception ex) {
 				Console.ForegroundColor = ConsoleColor.Red;
 				Console.WriteLine ($"VkCrowWindo: error loading interface ({path})");
 				Console.WriteLine (ex);
 				Console.ResetColor();
 			}
+			return w;
 		}
 		protected void loadIMLFragment (string imlFragment, object dataSource = null) {
 			iFace.LoadIMLFragment (imlFragment).DataSource = dataSource;
