@@ -6,11 +6,11 @@
 			<Label Text="{fps}" Font="mono, 20" Background="Black" Foreground="White" Margin="2" CornerRadius="5"/>
 		</HorizontalStack>
 		<Slider Template="#ui.Slider.template" Height="Fit" Background="0.1,0.1,0.2,0.8"
-			Maximum="100" SmallIncrement="1" LargeIncrement="10"
+			Minimum="1" Maximum="100" SmallIncrement="1" LargeIncrement="10"
 			Caption="Crow (gui) Update Interval (ms)" Value="{²CrowUpdateInterval}" />
 		<Slider Template="#ui.Slider.template" Height="Fit" Background="0.1,0.1,0.2,0.8"
-			Maximum="100" SmallIncrement="1" LargeIncrement="10"
+			Minimum="1" Maximum="100" SmallIncrement="1" LargeIncrement="10"
 			Caption="Vke (vulkan) Update Interval (ms)" Value="{²VkeUpdateInterval}" />
-		
+		<ColorPicker/>
 	</VerticalStack>
 </Window>

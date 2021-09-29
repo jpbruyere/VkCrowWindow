@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<Deterministic>true</Deterministic>
 
-		<TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+		<!--<TargetFrameworks>netcoreapp3.1</TargetFrameworks>-->
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 
 

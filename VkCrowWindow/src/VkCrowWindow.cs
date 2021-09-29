@@ -328,7 +328,7 @@ namespace vke {
 
 				crowBuffer = new HostBuffer (dev, VkBufferUsageFlags.TransferSrc | VkBufferUsageFlags.TransferDst, Width * Height * 4, true);
 
-				crowImage = new Image (dev, VkFormat.B8g8r8a8Unorm, VkImageUsageFlags.Sampled | VkImageUsageFlags.TransferDst,
+				crowImage = new Image (dev, VkFormat.B8g8r8a8Srgb, VkImageUsageFlags.Sampled | VkImageUsageFlags.TransferDst,
 					VkMemoryPropertyFlags.DeviceLocal, Width, Height, VkImageType.Image2D, VkSampleCountFlags.SampleCount1, VkImageTiling.Linear);
 				crowImage.CreateView (VkImageViewType.ImageView2D, VkImageAspectFlags.Color);
 				crowImage.CreateSampler (VkFilter.Nearest, VkFilter.Nearest, VkSamplerMipmapMode.Nearest, VkSamplerAddressMode.ClampToBorder);
