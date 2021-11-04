@@ -1,9 +1,9 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
 			"label": "build HelloWorld",
 			"command": "dotnet",
 			"type": "process",
@@ -14,13 +14,13 @@
 				"/property:Configuration=Debug",
 				"/consoleloggerparameters:NoSummary"
 			],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
+			"group": "build",
+			"presentation": {
+				"reveal": "silent"
+			},
+			"problemMatcher": "$msCompile"
+		},
+		{
 			"label": "build Triangle",
 			"command": "dotnet",
 			"type": "process",
@@ -31,13 +31,30 @@
 				"/property:Configuration=Debug",
 				"/consoleloggerparameters:NoSummary"
 			],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
+			"group": "build",
+			"presentation": {
+				"reveal": "silent"
+			},
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build Blendings",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/samples/Blendings/Blendings.csproj",
+				"/property:GenerateFullPaths=true",
+				"/property:Configuration=Debug",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"group": "build",
+			"presentation": {
+				"reveal": "silent"
+			},
+			"problemMatcher": "$msCompile"
+		},
+		{
 			"label": "build Tessellation",
 			"command": "dotnet",
 			"type": "process",
@@ -48,13 +65,13 @@
 				"/property:Configuration=Debug",
 				"/consoleloggerparameters:NoSummary"
 			],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
+			"group": "build",
+			"presentation": {
+				"reveal": "silent"
+			},
+			"problemMatcher": "$msCompile"
+		},
+		{
 			"label": "build Tessellation2",
 			"command": "dotnet",
 			"type": "process",
@@ -65,11 +82,11 @@
 				"/property:Configuration=Debug",
 				"/consoleloggerparameters:NoSummary"
 			],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "problemMatcher": "$msCompile"
-        },
-    ]
+			"group": "build",
+			"presentation": {
+				"reveal": "silent"
+			},
+			"problemMatcher": "$msCompile"
+		},
+	]
 }

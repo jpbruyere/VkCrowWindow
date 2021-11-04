@@ -2,13 +2,12 @@
 	<PropertyGroup>
 		<SolutionDir>$(MSBuildThisFileDirectory)</SolutionDir>
 		<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>
-		<IntermediateOutputPath>$(SolutionDir)build\obj\$(Configuration)\</IntermediateOutputPath>
 		<License>MIT</License>
 		<Authors>Jean-Philippe Bruyère</Authors>
 		<RepositoryUrl>https://github.com/jpbruyere/VkCrowWindow</RepositoryUrl>
 
-		<CrowPackageVersion>0.9.7-beta</CrowPackageVersion>
-		<VkePackageVersion>0.2.1-beta</VkePackageVersion>
-		<SpirVTasksPackageVersion>0.1.44</SpirVTasksPackageVersion>
+		<CrowPackageVersion>0.9.8</CrowPackageVersion>
+		<VkePackageVersion>0.2.2-beta</VkePackageVersion>
+		<SpirVTasksPackageVersion>0.1.45</SpirVTasksPackageVersion>
 	</PropertyGroup>
 </Project>

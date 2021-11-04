@@ -1,0 +1,13 @@
+CheckBox3 {
+	Template= "#ui.CheckBox2.imlt";
+	Background = "Jet";
+	Width = "Stretched";
+	Height = "Fit";
+	CornerRadius = "5";
+	Checked="{Background=MediumSeaGreen}";
+	Unchecked = "{Background=Jet}";
+}
+EnumSelector {
+	Template="#ui.EnumSelector.template";
+	ItemStyle="CheckBox3";
+}

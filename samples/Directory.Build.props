@@ -2,11 +2,7 @@
 	<Import Project="../Directory.Build.props" />
 	<PropertyGroup>
 		<Deterministic>true</Deterministic>
-
-		<!--<TargetFrameworks>netcoreapp3.1</TargetFrameworks>-->
 		<TargetFramework>netcoreapp3.1</TargetFramework>
-
-
 
 		<!--<OutputPath>$(SolutionDir)build\$(Configuration)\</OutputPath>-->
 		<OutputType>Exe</OutputType>
@@ -15,21 +11,14 @@
 
 		<CommonDir>$(MSBuildThisFileDirectory)common\</CommonDir>
 
-
 		<SpirVAdditionalIncludeDirectories>$(CommonShadersDir)shaders</SpirVAdditionalIncludeDirectories>
 
 		<!--<RestoreAdditionalProjectSources Condition="Exists('$(SolutionDir)build\$(Configuration)\')">$(SolutionDir)build\$(Configuration)\</RestoreAdditionalProjectSources>-->
 	</PropertyGroup>
 
-	<ItemGroup Condition=" '$(Configuration)|$(Platform)' != 'BuildPackages|AnyCPU' ">
-		<ProjectReference Include="..\..\VkCrowWindow\VkCrowWindow.csproj" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'BuildPackages|AnyCPU' ">
-		<PackageReference Include="vke" Version="$(VkePackageVersion)" />
-	</ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="SpirVTasks" Version="$(SpirVTasksPackageVersion)" />
+		<ProjectReference Include="..\..\VkCrowWindow\VkCrowWindow.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

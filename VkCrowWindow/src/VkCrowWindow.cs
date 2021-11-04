@@ -35,16 +35,22 @@ namespace vke {
 		public bool MouseIsInInterface =>
 			iFace.HoverWidget != null;
 
-		protected GraphicPipeline mainPipeline;	//final pipeline to target the swapchain
-		protected DescriptorPool descriptorPool;//descriptor pool for the final pipeline
-		protected DescriptorSet descriptorSet;	//descriptor set for the final pipeline
+		/// <summary>Final pipeline to target the swapchain.</summary>
+		protected GraphicPipeline mainPipeline;
+		/// <summary>descriptor pool for the final pipeline</summary>
+		protected DescriptorPool descriptorPool;
+		/// <summary>descriptor set for the final pipeline.</summary>
+		protected DescriptorSet descriptorSet;
 		CommandPool cmdPoolCrow;				//crow ui upload command pool
 		PrimaryCommandBuffer cmdUpdateCrow;		//crow ui upload command buff
 		Image crowImage;						//ui texture to output to swapchain
 		HostBuffer crowBuffer;					//vkBuffer used as backend memory for the main crow surface
-		protected Interface iFace;				//the crow interface
-		protected RenderPass renderPass;		//the main renderpass on swapchain.
-		protected FrameBuffers frameBuffers;	//the main multi-framebuffer for the swapchain.
+		/// <summary>the crow interface</summary>
+		protected Interface iFace;
+		/// <summary>the main renderpass on swapchain.</summary>
+		protected RenderPass renderPass;
+		/// <summary>the main multi-framebuffer for the swapchain.</summary>
+		protected FrameBuffers frameBuffers;
 
 		volatile bool running;
 
@@ -115,23 +121,11 @@ namespace vke {
 		/// <summary>
 		/// Create the main RenderPass for the swapchain.
 		/// The default one is a single color RP with loading operator set to Clear.
-		/// If you want to draw the ui on top of vulkan rendering, the loadOp should
-		/// be set to 'Load' to blend the ui with the rendering output.
+		/// If you want to draw the ui on top of another vulkan rendering with a dedicated
+		/// renderPass, the loadOp of the ui renderPass should be set to 'Load' to blend the ui with the rendering output.
 		/// </summary>
 		protected virtual void CreateRenderPass () {
 			renderPass = new RenderPass (dev, swapChain.ColorFormat, VkSampleCountFlags.SampleCount1);
-			/*renderPass = new RenderPass (dev, VkSampleCountFlags.SampleCount1);
-			renderPass.AddAttachment (swapChain.ColorFormat, VkImageLayout.PresentSrcKHR, VkSampleCountFlags.SampleCount1,
-				VkAttachmentLoadOp.Load, VkAttachmentStoreOp.DontCare, VkImageLayout.ColorAttachmentOptimal);//final outpout
-			SubPass subpass0 = new SubPass ();
-			subpass0.AddColorReference (0, VkImageLayout.ColorAttachmentOptimal);
-			renderPass.AddSubpass (subpass0);
-			renderPass.AddDependency (Vk.SubpassExternal, 0,
-				VkPipelineStageFlags.BottomOfPipe, VkPipelineStageFlags.ColorAttachmentOutput,
-				VkAccessFlags.MemoryRead, VkAccessFlags.ColorAttachmentWrite);
-			renderPass.AddDependency (0, Vk.SubpassExternal,
-				VkPipelineStageFlags.ColorAttachmentOutput, VkPipelineStageFlags.BottomOfPipe,
-				VkAccessFlags.ColorAttachmentWrite, VkAccessFlags.MemoryRead);*/
 		}
 		/// <summary>
 		/// Record command for the target swapchain image index to produce the final rendering.
@@ -151,7 +145,11 @@ namespace vke {
 
 			renderPass.End (cmd);
 		}
-		//build one command buffer per swapchain image.
+		/// <summary>
+		/// Build command buffers bound to the swapchain, one per swapchain image.
+		/// First Logical device IDLE state is awaited, the main command pool is reseted,
+		/// then `VkCrowWindow.buildCommandBuffer` method is called for each image.
+		/// </summary>
 		protected virtual void buildCommandBuffers () {
 			dev.WaitIdle ();
 			cmdPool.Reset ();
@@ -165,7 +163,7 @@ namespace vke {
 
 		#region vke overrides
 		/// <summary>
-		/// Override the default vke Update method.
+		/// Override the default `VkWindow.Update` method.
 		/// This is where the transfer between Crow(gui) and vke(vulkan) happens.
 		/// If crow interface is dirty (iFace.IsDirty), the crow resulting image is
 		/// uploaded to a vulkan texture and the dirty state is reseted.
@@ -184,7 +182,10 @@ namespace vke {
 
 			NotifyValueChanged ("fps", fps);
 		}
-
+		/// <summary>
+		/// Override the default `OnResize` of `vke.VkWindow`. The crow backend surface is resize,
+		/// the swapchain frame buffers are recreated and finaly the `buildCommandBuffers` method is called.
+		/// </summary>
 		protected override void OnResize ()
 		{
 			base.OnResize ();
@@ -198,7 +199,9 @@ namespace vke {
 
 			buildCommandBuffers();
 		}
-
+		/// <summary>
+		/// The main rendering loop, overrided from the VkWindow to add the crow interface update.
+		/// </summary>
 		protected override void render () {
 
 			int idx = swapChain.GetNextImage ();
@@ -219,7 +222,10 @@ namespace vke {
 			presentQueue.Submit (cmds[idx], swapChain.presentComplete, drawComplete[idx], drawFence);
 			presentQueue.Present (swapChain, drawComplete[idx]);
 		}
-
+		/// <summary>
+		/// The overridable method of the dispose pattern.
+		/// </summary>
+		/// <param name="disposing">True if disposed by use</param>
 		protected override void Dispose (bool disposing) {
 			dev.WaitIdle ();
 
@@ -368,6 +374,19 @@ namespace vke {
 		}
 
 		#region crow ui interface loading methods
+		/// <summary>
+		/// Load IML file or embedded resource (if prefixed with '#'). The name of
+		/// the root widget will be set with the `path` provided as first argument.
+		/// If the current interface has already loaded this IML file, the existing one will
+		/// be returned and put on top.
+		/// This will also allow  to call the closeWindow method with the `path` as argument.
+		/// </summary>
+		/// <remarks>
+		/// This method may be used to load any widget class, not only window.
+		/// </remarks>
+		/// <param name="path">the IML resource path, embeded or on disk.</param>
+		/// <param name="dataSource">Optional datasource</param>
+		/// <returns>The newly created widget instance</returns>
 		protected Widget loadWindow (string path, object dataSource = null) {
 			Widget w = null;
 			try {
@@ -387,14 +406,31 @@ namespace vke {
 			}
 			return w;
 		}
+		/// <summary>
+		/// Load IML fragment string into this interface.
+		/// </summary>
+		/// <param name="imlFragment">The IML source in plain text.</param>
+		/// <param name="dataSource">Optional datasource</param>
 		protected void loadIMLFragment (string imlFragment, object dataSource = null) {
 			iFace.LoadIMLFragment (imlFragment).DataSource = dataSource;
 		}
+		/// <summary>
+		/// Load IML fragment string into this interface and return the root widget
+		/// </summary>
+		/// <param name="imlFragment">The IML source in plain text.</param>
+		/// <param name="dataSource">Optional datasource</param>
+		/// <typeparam name="T">The type of the root widget of the IML fragment.</typeparam>
+		/// <returns>The newly created widget of type T</returns>
 		protected T loadIMLFragment<T> (string imlFragment, object dataSource = null) {
 			Widget tmp = iFace.LoadIMLFragment (imlFragment);
 			tmp.DataSource = dataSource;
 			return (T)Convert.ChangeType (tmp,typeof(T));
 		}
+		/// <summary>
+		/// Close a top level widget loaded with the `loadWindow` method by providing
+		/// it's IML file path.
+		/// </summary>
+		/// <param name="path">The IML resource path.</param>
 		protected void closeWindow (string path) {
 			Widget g = iFace.FindByName (path);
 			if (g != null)

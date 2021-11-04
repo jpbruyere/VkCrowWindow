@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Window Background="0.1,0.1,0.1,0.99" Width="300" Height="Fit">
+	<VerticalStack Margin="5" Spacing="10">
+		<EnumSelector Caption="src Color" EnumValue="{²srcColorBlendFactor}"/>
+		<EnumSelector Caption="src Alpha" EnumValue="{²srcAlphaBlendFactor}"/>
+		<EnumSelector Caption="dst Color" EnumValue="{²dstColorBlendFactor}"/>
+		<EnumSelector Caption="dst Alpha" EnumValue="{²dstAlphaBlendFactor}"/>
+	</VerticalStack>
+</Window>

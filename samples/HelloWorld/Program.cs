@@ -6,21 +6,6 @@ namespace HelloWorld
 
 	public class Program : CrowWindow
 	{
-#if NETCOREAPP
-		static IntPtr resolveUnmanaged (System.Reflection.Assembly assembly, String libraryName) {
-			switch (libraryName) {
-				case "glfw3":
-					return  System.Runtime.InteropServices.NativeLibrary.Load("glfw", assembly, null);
-				case "rsvg-2.40":
-					return  System.Runtime.InteropServices.NativeLibrary.Load("rsvg-2", assembly, null);
-			}
-			return IntPtr.Zero;
-		}
-		static Program () {
-			System.Runtime.Loader.AssemblyLoadContext.Default.ResolvingUnmanagedDll+=resolveUnmanaged;
-		}
-#endif
-
 		static void Main(string[] args)
 		{
 			using (Program app = new Program ())
