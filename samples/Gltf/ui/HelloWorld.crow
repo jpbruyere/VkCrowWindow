@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Window Caption="HELLO WORLD" Background="DarkGrey" Width="300" Height="300">
+	<VerticalStack Margin="5" Spacing="10">
+		<Label Text="{fps}"/>
+		<Slider Template="#ui.Slider.template" Height="Fit" Background="0.1,0.1,0.2"
+			Maximum="100" SmallIncrement="1" LargeIncrement="10"
+			Caption="Crow (gui) Update Interval (ms)" Value="{²CrowUpdateInterval}" />
+		<Slider Template="#ui.Slider.template" Height="Fit" Background="0.1,0.1,0.2"
+			Maximum="100" SmallIncrement="1" LargeIncrement="10"
+			Caption="Vke (vulkan) Update Interval (ms)" Value="{²VkeUpdateInterval}" />
+		<Vector3Widget Caption="Vector3" />
+	</VerticalStack>
+</Window>

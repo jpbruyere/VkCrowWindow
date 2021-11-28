@@ -7,6 +7,7 @@ using Vulkan;
 using Crow;
 using System.Threading;
 using System.Runtime.CompilerServices;
+using Drawing2D;
 
 namespace vke {
 	/// <summary>
@@ -46,7 +47,7 @@ namespace vke {
 		Image crowImage;						//ui texture to output to swapchain
 		HostBuffer crowBuffer;					//vkBuffer used as backend memory for the main crow surface
 		/// <summary>the crow interface</summary>
-		protected Interface iFace;
+		protected VkCrowInterface iFace;
 		/// <summary>the main renderpass on swapchain.</summary>
 		protected RenderPass renderPass;
 		/// <summary>the main multi-framebuffer for the swapchain.</summary>
@@ -77,10 +78,6 @@ namespace vke {
 				VkDebugUtilsMessageSeverityFlagsEXT.ErrorEXT |
 				VkDebugUtilsMessageSeverityFlagsEXT.VerboseEXT);
 #endif
-			Interface.CrowAssemblyNames = new string[] {"VkCrowWindow"};
-
-			iFace = new Interface ((int)Width, (int)Height, WindowHandle);
-			iFace.Init ();
 
 			CreateRenderPass ();
 
@@ -95,6 +92,13 @@ namespace vke {
 
 			Interface.UPDATE_INTERVAL = 5;
 			UpdateFrequency = 30;
+
+			Interface.CrowAssemblyNames = new string[] {"VkCrowWindow"};
+
+			initCrowSurface ();
+
+			iFace = new VkCrowInterface (WindowHandle, crowBuffer, crowImage);
+			iFace.Init ();
 
 			Thread ui = new Thread (crowThread);
 			ui.IsBackground = true;
@@ -189,11 +193,18 @@ namespace vke {
 		protected override void OnResize ()
 		{
 			base.OnResize ();
+			lock (iFace.UpdateMutex) {
+				dev.WaitIdle ();
+				iFace.MainSurface.Dispose();
+				iFace.uiImage.Dispose();
+				iFace.crowBuffer.Dispose();
+				initCrowSurface ();
+				iFace.uiImage = crowImage;
+				iFace.crowBuffer = crowBuffer;
+				dev.WaitIdle ();
 
-			dev.WaitIdle ();
-			initCrowSurface ();
-			iFace.ProcessResize (new Rectangle (0, 0, (int)Width, (int)Height));
-
+				iFace.ProcessResize (new Rectangle (0,0,(int)Width, (int)Height));
+			}
 			frameBuffers?.Dispose();
 			frameBuffers = renderPass.CreateFrameBuffers(swapChain);
 
@@ -311,9 +322,9 @@ namespace vke {
 		/// 'Interface.UPDATE_INTERVAL', which is a delay in milliseconds between the update of crow.
 		/// </summary>
 		void crowThread () {
-			while (iFace.surf == null) {
+			/*while (iFace.surf == null) {
 				Thread.Sleep (10);
-			}
+			}*/
 			running = true;
 			while (running) {
 				iFace.Update ();
@@ -327,30 +338,24 @@ namespace vke {
 		/// The command to upload the buffer to the texture is also created.
 		/// </summary>
 		void initCrowSurface () {
-			lock (iFace.UpdateMutex) {
-				iFace.surf?.Dispose ();
-				crowImage?.Dispose ();
-				crowBuffer?.Dispose ();
+			crowBuffer = new HostBuffer (dev, VkBufferUsageFlags.TransferSrc | VkBufferUsageFlags.TransferDst, Width * Height * 4, true);
 
-				crowBuffer = new HostBuffer (dev, VkBufferUsageFlags.TransferSrc | VkBufferUsageFlags.TransferDst, Width * Height * 4, true);
+			crowImage = new Image (dev, VkFormat.B8g8r8a8Srgb, VkImageUsageFlags.Sampled | VkImageUsageFlags.TransferDst,
+				VkMemoryPropertyFlags.DeviceLocal, Width, Height, VkImageType.Image2D, VkSampleCountFlags.SampleCount1, VkImageTiling.Linear);
+			crowImage.CreateView (VkImageViewType.ImageView2D, VkImageAspectFlags.Color);
+			crowImage.CreateSampler (VkFilter.Nearest, VkFilter.Nearest, VkSamplerMipmapMode.Nearest, VkSamplerAddressMode.ClampToBorder);
+			crowImage.Descriptor.imageLayout = VkImageLayout.ShaderReadOnlyOptimal;
 
-				crowImage = new Image (dev, VkFormat.B8g8r8a8Srgb, VkImageUsageFlags.Sampled | VkImageUsageFlags.TransferDst,
-					VkMemoryPropertyFlags.DeviceLocal, Width, Height, VkImageType.Image2D, VkSampleCountFlags.SampleCount1, VkImageTiling.Linear);
-				crowImage.CreateView (VkImageViewType.ImageView2D, VkImageAspectFlags.Color);
-				crowImage.CreateSampler (VkFilter.Nearest, VkFilter.Nearest, VkSamplerMipmapMode.Nearest, VkSamplerAddressMode.ClampToBorder);
-				crowImage.Descriptor.imageLayout = VkImageLayout.ShaderReadOnlyOptimal;
+			DescriptorSetWrites dsw = new DescriptorSetWrites (descriptorSet, dslBinding);
+			dsw.Write (dev, crowImage.Descriptor);
 
-				DescriptorSetWrites dsw = new DescriptorSetWrites (descriptorSet, dslBinding);
-				dsw.Write (dev, crowImage.Descriptor);
+			//iFace.surf = iFace.CreateSurfaceForData (crowBuffer.MappedData, (int)Width, (int)Height);
 
-				iFace.surf = iFace.CreateSurfaceForData (crowBuffer.MappedData, (int)Width, (int)Height);
+			PrimaryCommandBuffer cmd = cmdPoolCrow.AllocateAndStart (VkCommandBufferUsageFlags.OneTimeSubmit);
+			crowImage.SetLayout (cmd, VkImageAspectFlags.Color, VkImageLayout.Preinitialized, VkImageLayout.ShaderReadOnlyOptimal);
+			presentQueue.EndSubmitAndWait (cmd, true);
 
-				PrimaryCommandBuffer cmd = cmdPoolCrow.AllocateAndStart (VkCommandBufferUsageFlags.OneTimeSubmit);
-				crowImage.SetLayout (cmd, VkImageAspectFlags.Color, VkImageLayout.Preinitialized, VkImageLayout.ShaderReadOnlyOptimal);
-				presentQueue.EndSubmitAndWait (cmd, true);
-
-				recordUpdateCrowCmd ();
-			}
+			recordUpdateCrowCmd ();
 		}
 
 		/// <summary>
