@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netcoreapp3.0</TargetFramework>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<Description>create vulkan applications in c# with C.R.O.W. gui support.</Description>
 		<PackageTags>vulkan gui ui c# vke.net</PackageTags>
 
-		<PackageVersion>0.3.8</PackageVersion>
+		<PackageVersion>0.3.9</PackageVersion>
 		<KeyOriginatorFile>keypair.snk</KeyOriginatorFile>
 
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>

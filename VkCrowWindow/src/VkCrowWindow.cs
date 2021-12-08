@@ -65,7 +65,7 @@ namespace vke {
 		vke.DebugUtils.Messenger dbgmsg;
 #endif
 		protected override void initVulkan () {
-			camera = new Camera (Utils.DegreesToRadians (45), Width / Height, 0.1f, 32f);
+			camera = new Camera (Helpers.DegreesToRadians (45), Width / Height, 0.1f, 32f);
 			camera.Type = Camera.CamType.LookAt;
 			camera.SetPosition (0, 0, -10);
 
