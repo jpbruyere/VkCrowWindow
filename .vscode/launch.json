@@ -27,6 +27,17 @@
 			"stopAtEntry": false
 		},
 		{
+			"name": ".NET Core Launch (RadialGradient)",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build RadialGradient",
+			"program": "${workspaceFolder}/build/Debug/netcoreapp3.1/RadialGradient.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}/samples/RadialGradient",
+			"console": "internalConsole",
+			"stopAtEntry": false
+		},
+		{
 			"name": ".NET Core Launch (Blendings)",
 			"type": "coreclr",
 			"request": "launch",

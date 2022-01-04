@@ -7,7 +7,7 @@
 		<RepositoryUrl>https://github.com/jpbruyere/VkCrowWindow</RepositoryUrl>
 
 		<CrowPackageVersion>0.9.9-beta</CrowPackageVersion>
-		<VkePackageVersion>0.2.4-beta</VkePackageVersion>
+		<VkePackageVersion>0.2.5-beta</VkePackageVersion>
 		<SpirVTasksPackageVersion>0.1.45</SpirVTasksPackageVersion>
 	</PropertyGroup>
 </Project>

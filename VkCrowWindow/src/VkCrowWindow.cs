@@ -279,16 +279,16 @@ namespace vke {
 				return;
 			updateViewRequested = true;
 		}
-		protected override void onMouseButtonDown (MouseButton button) {
+		protected override void onMouseButtonDown (MouseButton button, Modifier mods) {
 			if (iFace.OnMouseButtonDown (button))
 				return;
-			base.onMouseButtonDown (button);
+			base.onMouseButtonDown (button, mods);
 		}
-		protected override void onMouseButtonUp (MouseButton button)
+		protected override void onMouseButtonUp (MouseButton button, Modifier mods)
 		{
 			if (iFace.OnMouseButtonUp (button))
 				return;
-			base.onMouseButtonUp (button);
+			base.onMouseButtonUp (button, mods);
 		}
 		protected override void onScroll (double xOffset, double yOffset) {
 			if (iFace.OnMouseWheelChanged ((float)yOffset))

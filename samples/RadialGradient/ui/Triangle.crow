@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Window Background="0.1,0.1,0.1,0.8" Width="Stretched" Height="200" VerticalAlignment="Bottom">
+	<VerticalStack Margin="5" >
+		<TextBox Multiline="true" Text="{²FragSource}" Width="Stretched" Height="Stretched" Background="1,1,1,0.5"/>
+		<Label Width="Stretched" Height="Fit" Multiline="false"
+			Background="Red" Foreground="White" Text="{FragShaderError}"
+			IsVisible="{FragShaderHasError}"/>
+		<Button Command="{CMDSave}"/>
+	</VerticalStack>
+</Window>
